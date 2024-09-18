@@ -17,22 +17,18 @@ namespace API_QuanLyNhanVien.Controllers
 
         [HttpGet]
         [Route("api/QuanLyNhanVien/danhsachnhanvien")]
-        public object XuatNhanVien(string IdE = null, string employeeName = null)
+        public object XuatNhanVien(string IdE = null, string employeeName = null, int pageSize = 50, int pageNumber = 1)
         {
             object result = new List<object>();
             DataTable dt = new DataTable();
-            if (IdE != null || employeeName != null)
-            {
-                SqlParameter[] searchParams = {
-                        new SqlParameter("@EmployeeID",IdE),
-                        new SqlParameter("@EmployeeName",employeeName)
-                };
-                dt = DBConnect.ExecuteQuery("SP_SELECT_SEARCH_EMPLOYEES", searchParams);
-            }
-            else
-            {
-                dt = DBConnect.ExecuteQuery("SP_SELECT_SEARCH_EMPLOYEES");
-            }
+            SqlParameter[] searchParams = {
+                new SqlParameter("@EmployeeID",IdE),
+                new SqlParameter("@EmployeeName",employeeName),
+                new SqlParameter("@PageSize",pageSize),
+                new SqlParameter("@PageNumber",pageNumber)
+            };
+
+            dt = DBConnect.ExecuteQuery("SP_SELECT_SEARCH_EMPLOYEES", searchParams);
 
             if (dt.Rows.Count > 0)
                 result = dt;
@@ -53,8 +49,8 @@ namespace API_QuanLyNhanVien.Controllers
             int departmentId = (int)data["DepartmentID"];
 
             SqlParameter[] insertparams = {
-                    new SqlParameter("@FirstName", firstName),
-                    new SqlParameter("@LastName", lastName),
+                new SqlParameter("@FirstName", firstName),
+                new SqlParameter("@LastName", lastName),
                      new SqlParameter("@DOB", dob),
                       new SqlParameter("@Gender", gender),
                     new SqlParameter("@Address", address),
@@ -63,14 +59,7 @@ namespace API_QuanLyNhanVien.Controllers
             };
 
             result = DBConnect.ExecuteNonQuery("SP_INSERT_EMPLOYEES", insertparams);
-            if (result)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return result;
         }
         [HttpPost]
         [Route("api/QuanLyNhanVien/suanhanvien")]
@@ -85,27 +74,18 @@ namespace API_QuanLyNhanVien.Controllers
             string address = data["Address"].ToString();
             string position = data["Position"].ToString();
             int departmentId = (int)data["DepartmentID"];
-
             SqlParameter[] updateparams = {
-                    new SqlParameter("@EmployeeID", employeeID),
-                    new SqlParameter("@FirstName", firstName),
-                    new SqlParameter("@LastName", lastName),
-                     new SqlParameter("@DOB", dob),
-                      new SqlParameter("@Gender", gender),
-                    new SqlParameter("@Address", address),
-                     new SqlParameter("@Position", position),
-                    new SqlParameter("@DepartmentID", departmentId)
+                new SqlParameter("@EmployeeID", employeeID),
+                new SqlParameter("@FirstName", firstName),
+                new SqlParameter("@LastName", lastName),
+                new SqlParameter("@DOB", dob),
+                new SqlParameter("@Gender", gender),
+                new SqlParameter("@Address", address),
+                new SqlParameter("@Position", position),
+                new SqlParameter("@DepartmentID", departmentId)
             };
-
             result = DBConnect.ExecuteNonQuery("SP_UPDATE_EMPLOYEES", updateparams);
-            if (result)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return result;
         }
 
         [HttpPost]
@@ -163,14 +143,7 @@ namespace API_QuanLyNhanVien.Controllers
             };
 
             result = DBConnect.ExecuteNonQuery("SP_INSERT_DEPARTMENT", insertparams);
-            if (result)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return result;
         }
         [HttpPost]
         [Route("api/QuanLyNhanVien/suaphongban")]
@@ -188,16 +161,8 @@ namespace API_QuanLyNhanVien.Controllers
             };
 
             result = DBConnect.ExecuteNonQuery("SP_UPDATE_DEPARTMENT", updateparams);
-            if (result)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return result;
         }
-
         [HttpPost]
         [Route("api/QuanLyNhanVien/xoaphongban")]
         public int XoaPhongBan(string Id)
@@ -233,7 +198,6 @@ namespace API_QuanLyNhanVien.Controllers
                 result = dt;
                 return result;
             }
-
             return result;
         }
         [HttpPost]
@@ -244,23 +208,17 @@ namespace API_QuanLyNhanVien.Controllers
             string username = data["Username"].ToString();
             string displayName = data["DisplayName"].ToString();
             string passwordHash = data["PasswordHash"].ToString();
-
-
+            string oldPassword = data["OldPassword"].ToString();
             SqlParameter[] updateparams = {
                     new SqlParameter("@Username", username),
                     new SqlParameter("@DisplayName", displayName),
                     new SqlParameter("@PasswordHash", passwordHash),
+                    new SqlParameter("@OldPassword", oldPassword),
+
             };
 
             result = DBConnect.ExecuteNonQuery("SP_UPDATE_USERACCOUNTS", updateparams);
-            if (result)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return result;
         }
     }
 }
